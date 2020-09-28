@@ -1,0 +1,13 @@
+# Distribution Files
+node_modules
+dist
+target
+
+# Environment
+.env
+config.json
+
+# Misc
+*.log*
+.cache
+.ultra.cache.json

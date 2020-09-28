@@ -1,0 +1,14 @@
+{
+    "name": "@throw-out-error/homelab-panel",
+    "main": "index.js",
+    "version": "1.0.0",
+    "author": "Theo Paris <theoparisdesigns@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "start:all": "ultra -r build && ultra -r start",
+        "dev": "pnpm run dev"
+    },
+    "devDependencies": {
+        "ultra-runner": "^3.5.0"
+    }
+}
