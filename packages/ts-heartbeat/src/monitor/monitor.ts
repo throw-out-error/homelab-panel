@@ -108,10 +108,9 @@ export abstract class Monitor {
     /**
      * @public
      * @function start
-     * @param url The destination url, e.g. www.google.com
-     * @param port Optional: The port of the destination url
      * @param function successFn The function to be executed on a successful ping
      * @param function failedFn The function to be executed on a failed ping
+     * @param number initial Whether or not the monitor pings the host right as it is started.
      * @description Starts the heartbeat object, executing the a ping function at the defined interval
      */
     start(

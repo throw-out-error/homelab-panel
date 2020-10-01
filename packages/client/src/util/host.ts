@@ -1,7 +1,10 @@
-import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/core";
-import { MonitorType } from "../utils";
+export type HostContainer = {
+    host: Host;
+    status: string;
+    userID?: string;
+    connection?: HostConnection;
+};
 
-@Entity()
 export class Host extends BaseEntity<Host, "id"> {
     @PrimaryKey()
     id!: string;
@@ -13,7 +16,7 @@ export class Host extends BaseEntity<Host, "id"> {
     address: string;
 
     @Property()
-    monitors: [{ port?: number; service: string; type: MonitorType }];
+    port: number;
 
     @Property()
     cluster: string;

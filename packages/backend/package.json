@@ -15,6 +15,8 @@
         "@mikro-orm/mongodb": "^4.0.7",
         "@throw-out-error/better-events": "^1.0.3",
         "@throw-out-error/heartbeat": "*",
+        "@throw-out-error/homelab-common": "*",
+        "@throw-out-error/throw-out-utils": "link:C:/Users/thebo/Documents/throw-out-utils",
         "async-socket.io": "^0.2.1",
         "axios": "^0.20.0",
         "bcrypt": "^5.0.0",

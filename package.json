@@ -5,8 +5,8 @@
     "author": "Theo Paris <theoparisdesigns@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "start:all": "ultra -r build && ultra -r start",
-        "dev": "pnpm run dev"
+        "build:all": "ultra -r build",
+        "start:all": "pnpm run build:all && ultra -r start"
     },
     "devDependencies": {
         "ultra-runner": "^3.5.0"

@@ -1,0 +1,18 @@
+{
+    "name": "@throw-out-error/homelab-common",
+    "version": "1.0.0",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepublishOnly": "yarn run build"
+    },
+    "devDependencies": {
+        "@types/node": "^14.11.2",
+        "typescript": "^4.0.3"
+    }
+}

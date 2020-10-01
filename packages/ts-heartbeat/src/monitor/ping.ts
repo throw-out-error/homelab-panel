@@ -1,5 +1,4 @@
 import { Monitor } from "./monitor";
-import net from "net";
 import { ConnectionOptions } from "../util";
 import ping from "pingman";
 

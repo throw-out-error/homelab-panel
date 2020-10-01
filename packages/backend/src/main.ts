@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { config } from "dotenv";
 import * as express from "express";
-import { ClusterService } from "./services/cluster.service";
+import { ClusterService, stripHostContainer } from "./services/cluster.service";
 import { logger } from "./utils";
 import { AnyEntity, MikroORM } from "@mikro-orm/core";
 import { Container } from "typedi";
@@ -30,17 +30,19 @@ async function bootstrap() {
     Container.set("cluster-service", new ClusterService());
 
     const cs = Container.get<ClusterService>("cluster-service");
-    app.get("/status", async (req, res) => {
-        const subscriber = cs.getOverallStatus().subscribe({
-            error: (error) => {
-                res.status(500).json({ error });
-                subscriber.unsubscribe();
-            },
-            next: (result) => {
-                res.json({ result });
-                subscriber.unsubscribe();
-            },
-        });
+    app.get("/cluster/status", async (req, res) => {
+        if (!req.query.cluster) {
+            cs.getClusters()
+                .then((result) => {
+                    res.json({
+                        result: result.map(stripHostContainer),
+                    });
+                })
+                .catch((error) => {
+                    console.trace(error);
+                    return res.status(500).json({ error });
+                });
+        }
     });
 
     app.listen(port, () => {

@@ -30,3 +30,5 @@ export const nanoToMilliseconds = (nanoseconds: number) =>
 
 export const nanoToSeconds = (nanoseconds: number) =>
     Math.floor(nanoseconds / 1e9);
+
+export type MonitorType = "tcp" | "http";
