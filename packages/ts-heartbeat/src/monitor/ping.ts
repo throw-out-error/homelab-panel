@@ -3,11 +3,6 @@ import { ConnectionOptions } from "../util";
 import ping from "pingman";
 
 export class SimplePingMonitor extends Monitor {
-    constructor() {
-        // Empty constructor
-        super();
-    }
-
     /**
      * @public
      * @function ping
@@ -17,10 +12,9 @@ export class SimplePingMonitor extends Monitor {
      */
     public ping(opts: ConnectionOptions): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            ping(opts.url)
+            ping(opts.url === "localhost" ? "127.0.0.1" : opts.url)
                 .then((response) => {
-                    if (response.alive) resolve(response.time);
-                    else reject();
+                    resolve(response.time);
                 })
                 .catch((err) => reject(err));
         });

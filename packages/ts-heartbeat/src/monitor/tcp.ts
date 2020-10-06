@@ -1,5 +1,5 @@
 import { Monitor } from "./monitor";
-import net from "net";
+import * as net from "net";
 import { ConnectionOptions } from "../util";
 
 export class TcpMonitor extends Monitor {
@@ -40,7 +40,7 @@ export class TcpMonitor extends Monitor {
                 if (this.timeoutTimer !== undefined) {
                     clearTimeout(this.timeoutTimer);
                 }
-                reject(-1);
+                resolve(-1);
                 pingRequest.end();
             });
 

@@ -1,8 +1,8 @@
 import { ConnectionOptions } from "../util";
 
 export abstract class Monitor {
-    protected DEFAULT_TIMEOUT: number = 5000;
-    protected DEFAULT_INTERVAL: number = 3000;
+    protected DEFAULT_TIMEOUT = 5000;
+    protected DEFAULT_INTERVAL = 3000;
 
     protected lastHeartbeatTime: number;
     protected timer: NodeJS.Timer | undefined;

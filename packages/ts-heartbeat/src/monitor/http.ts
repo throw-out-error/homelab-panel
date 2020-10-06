@@ -1,5 +1,5 @@
-import http from "http";
-import https from "https";
+import * as http from "http";
+import * as https from "https";
 import { ConnectionOptions } from "../util";
 import { Monitor } from "./monitor";
 
@@ -41,7 +41,7 @@ export class HttpMonitor extends Monitor {
                 if (this.timeoutTimer !== undefined) {
                     clearTimeout(this.timeoutTimer);
                 }
-                reject(-1);
+                resolve(-1);
                 pingRequest.abort();
             });
 
