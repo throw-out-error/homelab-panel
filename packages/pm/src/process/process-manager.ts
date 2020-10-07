@@ -25,6 +25,11 @@ export class ProcessManager {
 
     constructor(baseDir: string) {
         this.baseDir = baseDir;
+        process.on("beforeExit", () => {
+            this.pm.forEach((value) => {
+                value.monitor.kill();
+            });
+        });
     }
 
     async deployNodeApp(app: App): Promise<ProcessResult> {
