@@ -1,7 +1,7 @@
 {
-    "name": "@throw-out-error/heartbeat",
+    "name": "@throw-out-error/pm",
     "version": "1.0.0",
-    "description": "Yet another heartbeat monitor made in typescript",
+    "description": "Yet another process manager made in typescript - also includes a heartbeat monitor",
     "license": "MIT",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -14,9 +14,12 @@
     },
     "devDependencies": {
         "@types/node": "^14.11.2",
+        "@types/nodegit": "^0.26.10",
         "typescript": "^4.0.3"
     },
     "dependencies": {
-        "pingman": "^1.0.9"
+        "nodegit": "^0.27.0",
+        "pingman": "^1.0.9",
+        "rotating-file-stream": "^2.1.3"
     }
 }
