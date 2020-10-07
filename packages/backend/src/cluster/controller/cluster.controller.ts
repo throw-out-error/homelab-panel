@@ -14,17 +14,19 @@ import {
 import { ClusterService } from "../cluster.service";
 import { HostCreationOptions } from "../../util/host-connection";
 import { ApiBody } from "@nestjs/swagger";
-import { Monitor as ForeverMonitor } from "forever-monitor";
+import * as rfs from "rotating-file-stream";
 import * as NodeGit from "nodegit";
 import * as fs from "fs";
 import { ApiResult } from "../../util/api-result";
 import { logger } from "../../util/utils";
 import { spawn, ChildProcess } from "child_process";
+import { RotatingFileStream } from "rotating-file-stream";
 
 export interface App {
     name: string;
     repo: { url: string; branch?: string };
     workers?: number;
+    port: number;
 }
 
 export function promisifyProcesss(child: ChildProcess) {
@@ -36,7 +38,15 @@ export function promisifyProcesss(child: ChildProcess) {
 
 @Controller("cluster")
 export class ClusterController {
-    pm: Map<string, { monitor: ForeverMonitor; app: App }> = new Map();
+    pm: Map<
+        string,
+        {
+            monitor?: ChildProcess;
+            app: App;
+            logStream?: RotatingFileStream;
+            errStream?: RotatingFileStream;
+        }
+    > = new Map();
 
     constructor(private cluster: ClusterService) {}
 
@@ -45,30 +55,25 @@ export class ClusterController {
         return await this.cluster.create(host);
     }
 
-    @Post("deploy")
+    @Post("deploy/node")
     @ApiBody({
         type: ApiResult,
     })
     async deploy(@Body() app: App): Promise<ApiResult> {
+        const appPath = `../../data/${app.name}`;
+        const logPath = `../../logs/${app.name}`;
+
         try {
-            const appPath = `../../data/${app.name}`;
             if (!fs.existsSync(appPath)) {
                 fs.mkdirSync(appPath);
                 await NodeGit.Clone.clone(app.repo.url, appPath, {
                     checkoutBranch: app.repo.branch ?? "master",
                 });
             }
-            if (this.pm.has(app.name)) this.pm.get(app.name).monitor.stop();
+            if (this.pm.has(app.name)) this.pm.get(app.name).monitor.kill();
 
-            this.pm.set(app.name, {
-                monitor: new ForeverMonitor("npm run start", {
-                    cwd: appPath,
-                    max: app.workers ?? 1,
-                    silent: true,
-                    logFile: `../../logs/${app.name}.log`,
-                }),
-                app,
-            });
+            if (!this.pm.has(app.name)) this.pm.set(app.name, { app });
+
             const repo = await NodeGit.Repository.open(appPath);
             await repo.fetchAll({});
             await repo.mergeBranches(
@@ -82,26 +87,67 @@ export class ClusterController {
                     windowsHide: true,
                 }),
             );
-            try {
-                await promisifyProcesss(
-                    spawn("npm run build", {
-                        cwd: appPath,
-                        shell: true,
-                        windowsHide: true,
-                    }),
-                );
-            } catch (err) {
-                logger.log(`Unable to build app ${app.name}: ${err.message}`);
-            }
-            this.pm.get(app.name).monitor.start();
-            return { status: true };
         } catch (error) {
             logger.error(error);
             return { status: false, error };
         }
+        try {
+            await promisifyProcesss(
+                spawn("npm run build", {
+                    cwd: appPath,
+                    shell: true,
+                    windowsHide: true,
+                }),
+            );
+        } catch (err) {
+            logger.log(`Unable to build app ${app.name}: ${err.message}`);
+        }
+
+        // Access log
+        this.pm.get(app.name).logStream = rfs.createStream(
+            `${logPath}/access.log`,
+            {
+                size: "10M", // rotate every 10 MegaBytes written
+                interval: "1d", // rotate daily
+                compress: "gzip", // compress rotated files
+            },
+        );
+
+        // Error log
+        this.pm.get(app.name).errStream = rfs.createStream(
+            `${logPath}/error.log`,
+            {
+                size: "10M", // rotate every 10 MegaBytes written
+                interval: "1d", // rotate daily
+                compress: "gzip", // compress rotated files
+            },
+        );
+
+        // Start the app
+        try {
+            this.pm.get(app.name).monitor = spawn("npm run start", {
+                env: { ...process.env, PORT: (app.port || 3005).toString() },
+                cwd: appPath,
+                shell: true,
+                windowsHide: true,
+                stdio: "pipe",
+            });
+            this.pm
+                .get(app.name)
+                .monitor.stdout.pipe(this.pm.get(app.name).logStream);
+
+            this.pm
+                .get(app.name)
+                .monitor.stderr.pipe(this.pm.get(app.name).errStream);
+        } catch (err) {
+            this.pm.get(app.name).errStream.write(err.toString());
+        }
+        return {
+            status: !this.pm.get(app.name).monitor.killed,
+        };
     }
 
-    @Post()
+    @Get("deployments")
     @Get("health")
     status(@QueryParam("cluster") cluster?: string) {
         return new Promise<Record<string, number>>((resolve, reject) => {
