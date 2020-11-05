@@ -1,14 +1,15 @@
 {
-    "name": "@throw-out-error/homelab-panel",
-    "main": "index.js",
-    "version": "1.0.0",
-    "author": "Theo Paris <theoparisdesigns@gmail.com>",
-    "license": "MIT",
-    "scripts": {
-        "build:all": "ultra -r build",
-        "start:all": "pnpm run build:all && ultra -r start"
-    },
-    "devDependencies": {
-        "ultra-runner": "^3.5.0"
-    }
+	"name": "@flowtr/homelab-panel",
+	"private": true,
+	"main": "index.js",
+	"version": "1.0.0",
+	"author": "Theo Paris <theoparisdesigns@gmail.com>",
+	"license": "MIT",
+	"scripts": {
+		"build": "ultra -r build",
+		"link": "ultra -r --filter '*cli' pnpm link"
+	},
+	"devDependencies": {
+		"ultra-runner": "^3.5.0"
+	}
 }

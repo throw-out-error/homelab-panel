@@ -1,5 +1,4 @@
-import { ProcessResult } from "@throw-out-error/pm";
-export class ApiResult implements ProcessResult {
+export class ApiResult {
     status: boolean;
     error?: Error;
 }

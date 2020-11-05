@@ -4,26 +4,19 @@ import {
     Query as QueryParam,
     Post,
     Body,
+    InternalServerErrorException,
 } from "@nestjs/common";
-import {
-    HttpMonitor,
-    Monitor,
-    SimplePingMonitor,
-    TcpMonitor,
-    App,
-    ProcessManager,
-} from "@throw-out-error/pm";
+import axios from "axios";
 import { ClusterService } from "../cluster.service";
 import { HostCreationOptions } from "../../util/host-connection";
 import { ApiBody } from "@nestjs/swagger";
-
+import { Observable } from "rxjs";
+import { catchError, first } from "rxjs/operators";
 import { ApiResult } from "../../util/api-result";
 import { logger } from "../../util/utils";
 
 @Controller("cluster")
 export class ClusterController {
-    pm: ProcessManager = new ProcessManager("../../");
-
     constructor(private cluster: ClusterService) {}
 
     @Post("host/create")
@@ -31,15 +24,57 @@ export class ClusterController {
         return await this.cluster.create(host);
     }
 
-    @Post("deploy/node")
+    /*     @Post("deploy/node")
     @ApiBody({
         type: ApiResult,
     })
     async deploy(@Body() app: App): Promise<ApiResult> {
         return this.pm.deployNodeApp(app);
+    } */
+
+    @Get("clusters")
+    async getHosts() {
+        return this.cluster.findAll();
     }
 
-    @Get("deployments")
+    @Get("stats")
+    getHostStats(
+        @QueryParam("cluster") cluster: string,
+        @QueryParam("host") host: string
+    ): Observable<unknown> {
+        return new Observable((observer) => {
+            this.cluster.findByCluster(cluster).then((hs) => {
+                const h = hs.find(
+                    (h) => h.address === host || h.id.toString() === host
+                );
+                axios
+                    .post(`http://${h.address}:9990/auth`, {
+                        password: h.accessToken,
+                    })
+                    .then((res) => {
+                        if (!res.data.accessToken)
+                            return observer.error(
+                                `Invalid access token for ${h.address}`
+                            );
+                        axios
+                            .get(`http://${h.address}:9990/stats`, {
+                                headers: {
+                                    Authorization: res.data.accessToken,
+                                },
+                            })
+                            .then(({ data }) => observer.next(data))
+                            .catch((err) => observer.error(err));
+                    })
+                    .catch((err) => observer.error(err));
+            });
+        }).pipe(
+            catchError((err: Error) => {
+                throw new InternalServerErrorException(err.toString());
+            }),
+            first()
+        );
+    }
+    /*
     @Get("health")
     status(@QueryParam("cluster") cluster?: string) {
         return new Promise<Record<string, number>>((resolve, reject) => {
@@ -57,7 +92,7 @@ export class ClusterController {
                                         data = await new SimplePingMonitor().ping(
                                             {
                                                 url: h.address,
-                                            },
+                                            }
                                         );
                                         result[h.id.toString()] = data;
                                     case "http":
@@ -81,5 +116,5 @@ export class ClusterController {
                     resolve(result);
                 });
         });
-    }
+    } */
 }

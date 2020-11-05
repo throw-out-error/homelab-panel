@@ -1,12 +1,11 @@
 import { Host } from "./entity/host.entity";
 import { HostContainer, HostCreationOptions } from "../util/host-connection";
-import { wrapPromiseWithTimeout } from "@throw-out-error/homelab-common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeleteResult, Repository } from "typeorm";
-import { CodeError } from "@throw-out-error/throw-out-utils";
+import { ImprovedError } from "@flowtr/homelab-common";
 
 export const stripHostContainer = (
-    hc: HostContainer,
+    hc: HostContainer
 ): { status: string; host: Host } => ({
     status: hc.status,
     host: hc.host,
@@ -17,7 +16,7 @@ export class ClusterService {
 
     constructor(
         @InjectRepository(Host)
-        private hostRepository: Repository<Host>,
+        private hostRepository: Repository<Host>
     ) {}
 
     async findAll(): Promise<Host[]> {
@@ -53,7 +52,7 @@ export class ClusterService {
             });
             return host;
         } catch (err) {
-            throw new CodeError("500", err);
+            throw new ImprovedError({ code: "500", message: err });
         }
     }
 

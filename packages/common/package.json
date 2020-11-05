@@ -1,5 +1,5 @@
 {
-    "name": "@throw-out-error/homelab-common",
+    "name": "@flowtr/homelab-common",
     "version": "1.0.0",
     "license": "MIT",
     "main": "dist/index.js",
@@ -14,5 +14,8 @@
     "devDependencies": {
         "@types/node": "^14.11.2",
         "typescript": "^4.0.3"
+    },
+    "dependencies": {
+        "@toes/core": "0.0.3"
     }
 }

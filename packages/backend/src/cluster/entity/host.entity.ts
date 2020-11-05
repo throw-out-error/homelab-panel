@@ -7,7 +7,7 @@ export class Host {
     id: ObjectID;
 
     @Column({ default: "" })
-    alias?: string;
+    accessToken: string;
 
     @Column()
     address: string;

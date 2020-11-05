@@ -5,12 +5,13 @@ target
 
 # Environment
 .env
-config.json
+*config.yml
 
 # Misc
 *.log*
 .cache
 .ultra.cache.json
+.parcel-cache
 
 data
 logs
