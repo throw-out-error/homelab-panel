@@ -7,6 +7,8 @@ export async function bootstrap() {
 	const configService: ConfigService = app.get(ConfigService);
 	// Do agent initialization
 
+
+
 	await app.listenAsync(configService.get<number>("port"));
 	return app;
 }
