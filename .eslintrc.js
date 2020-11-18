@@ -1,4 +1,5 @@
 module.exports = {
+	root: true,
 	parser: "@typescript-eslint/parser",
 	parserOptions: {
 		ecmaVersion: 2020,
@@ -19,9 +20,11 @@ module.exports = {
 	},
 	extends: [
 		"plugin:@typescript-eslint/recommended",
-		"plugin:prettier/recommended",
+		"prettier",
+		"prettier/@typescript-eslint",
 	],
 	rules: {
 		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"@typescript-eslint/no-var-requires": "off",
 	},
 };

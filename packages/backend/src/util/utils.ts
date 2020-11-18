@@ -1,4 +1,4 @@
-import { PrefixLogger } from "@flowtr/homelab-common";
+import { PrefixLogger } from "@toes/core";
 
 export const logger = PrefixLogger.with({ prefix: "Main" });
 

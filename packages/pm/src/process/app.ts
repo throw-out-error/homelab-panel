@@ -1,6 +1,6 @@
 export interface App {
     name: string;
     repo: { url: string; branch?: string };
-    workers?: number;
-    port: number;
+    env: Record<string, unknown>;
+    ports: number[];
 }

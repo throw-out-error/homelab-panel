@@ -6,17 +6,20 @@ import yaml from "yaml";
 import fs from "fs";
 import { AuthGuard } from "./auth.guard";
 import { JwtModule } from "@nestjs/jwt";
+import { createConfigDir } from "@flowtr/homelab-common";
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
 			load: [
-				() =>
-					yaml.parse(
-						fs.readFileSync(`${process.cwd()}/agent-config.yml`, {
+				() =>{
+					const configDir = createConfigDir();
+					return yaml.parse(
+						fs.readFileSync(`${configDir}/agent-config.yml`, {
 							encoding: "utf-8",
 						}),
-					),
+					)
+				}
 			],
 		}),
 		JwtModule.registerAsync({

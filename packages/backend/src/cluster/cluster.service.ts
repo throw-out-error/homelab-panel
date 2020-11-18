@@ -2,61 +2,61 @@ import { Host } from "./entity/host.entity";
 import { HostContainer, HostCreationOptions } from "../util/host-connection";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeleteResult, Repository } from "typeorm";
-import { ImprovedError } from "@flowtr/homelab-common";
+import { ImprovedError } from "@toes/core";
 
 export const stripHostContainer = (
-    hc: HostContainer
+	hc: HostContainer
 ): { status: string; host: Host } => ({
-    status: hc.status,
-    host: hc.host,
+	status: hc.status,
+	host: hc.host,
 });
 
 export class ClusterService {
-    connections: Record<number, HostContainer> = {};
+	connections: Record<number, HostContainer> = {};
 
-    constructor(
-        @InjectRepository(Host)
-        private hostRepository: Repository<Host>
-    ) {}
+	constructor(
+		@InjectRepository(Host)
+		private hostRepository: Repository<Host>
+	) {}
 
-    async findAll(): Promise<Host[]> {
-        return await this.hostRepository.find({});
-    }
+	async findAll(): Promise<Host[]> {
+		return await this.hostRepository.find({});
+	}
 
-    async findByCluster(cluster: string): Promise<Host[]> {
-        return await this.hostRepository.find({ cluster });
-    }
+	async findByCluster(cluster: string): Promise<Host[]> {
+		return await this.hostRepository.find({ cluster });
+	}
 
-    async findOne(id: string): Promise<Host> {
-        return await this.hostRepository.findOne(id);
-    }
+	async findOne(id: string): Promise<Host> {
+		return await this.hostRepository.findOne(id);
+	}
 
-    async remove(id: string): Promise<DeleteResult> {
-        return await this.hostRepository.delete({ id });
-    }
+	async remove(id: string): Promise<DeleteResult> {
+		return await this.hostRepository.delete({ id });
+	}
 
-    async create(h: HostCreationOptions): Promise<Host> {
-        try {
-            await this.hostRepository.insert({
-                ...h,
-                cluster: h.cluster || "default",
-                monitors: [
-                    {
-                        name: "ping",
-                        type: "ping",
-                    },
-                ],
-            });
-            const host = this.hostRepository.findOne({
-                cluster: h.cluster || "default",
-            });
-            return host;
-        } catch (err) {
-            throw new ImprovedError({ code: "500", message: err });
-        }
-    }
+	async create(h: HostCreationOptions): Promise<Host> {
+		try {
+			await this.hostRepository.insert({
+				...h,
+				cluster: h.cluster || "default",
+				monitors: [
+					{
+						name: "ping",
+						type: "ping",
+					},
+				],
+			});
+			const host = this.hostRepository.findOne({
+				cluster: h.cluster || "default",
+			});
+			return host;
+		} catch (err) {
+			throw new ImprovedError({ code: "500", message: err });
+		}
+	}
 
-    /*     createHostConnection(host: Host): Observable<HostContainer> {
+	/*     createHostConnection(host: Host): Observable<HostContainer> {
         return new Observable((subscriber) => {
             const id = `${host.cluster}-${host.id}`;
             try {

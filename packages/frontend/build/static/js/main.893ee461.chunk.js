@@ -1,2 +1,0 @@
-(this["webpackJsonp@flowtr/homelab-client"]=this["webpackJsonp@flowtr/homelab-client"]||[]).push([[0],{4:function(t,e,n){"use strict";n.r(e);var c=n(2),o=(n(1),n(3)),r=function(){return Object(c.jsx)("h1",{children:"Application"})};Object(o.render)(Object(c.jsx)(r,{}),document.getElementById("root"))}},[[4,1,2]]]);
-//# sourceMappingURL=main.893ee461.chunk.js.map

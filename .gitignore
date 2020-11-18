@@ -1,17 +1,24 @@
 # Distribution Files
 node_modules
 dist
+build
 target
 
 # Environment
 .env
-*config.yml
+config/
+/swagger-spec.json
+*.htpasswd
 
 # Misc
 *.log*
 .cache
 .ultra.cache.json
 .parcel-cache
+
+# We are using pnpm
+package-lock.json
+yarn.lock
 
 data
 logs

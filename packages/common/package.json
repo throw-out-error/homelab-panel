@@ -1,21 +1,22 @@
 {
-    "name": "@flowtr/homelab-common",
-    "version": "1.0.0",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsc",
-        "prepublishOnly": "yarn run build"
-    },
-    "devDependencies": {
-        "@types/node": "^14.11.2",
-        "typescript": "^4.0.3"
-    },
-    "dependencies": {
-        "@toes/core": "0.0.3"
-    }
+	"name": "@flowtr/homelab-common",
+	"version": "0.0.1",
+	"license": "MIT",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint --quiet --fix src/**/*",
+		"prepublishOnly": "pnpm run build"
+	},
+	"devDependencies": {
+		"axios-observable": "^1.1.3",
+		"axios": "^0.21.0",
+		"openapi-types": "^7.0.1",
+		"@types/node": "^14.14.7",
+		"typescript": "^4.0.5"
+	}
 }

@@ -1,0 +1,42 @@
+{
+	"name": "@flowtr/react-charts",
+	"version": "0.0.1",
+	"description": "React chart.js helper for calculating data over time",
+	"files": [
+		"dist"
+	],
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"lint": "eslint --quiet --fix src/**/*",
+		"build": "parcel build src/index.tsx --no-cache"
+	},
+	"license": "MIT",
+	"author": "Theo Paris",
+	"dependencies": {
+		"@flowtr/homelab-common": "workspace:*",
+		"@toes/core": "^0.0.4",
+		"axios": "^0.21.0",
+		"bootstrap-daterangepicker": "^3.1.0",
+		"chart.js": "2.9.4",
+		"classnames": "^2.2.6",
+		"date-fns": "^2.16.1",
+		"jquery": "^3.5.1",
+		"moment": "^2.29.1",
+		"object-assign": "^4.1.1",
+		"react": "^17.0.1",
+		"react-bootstrap": "^1.4.0",
+		"react-bootstrap-daterangepicker": "^7.0.0",
+		"react-list": "^0.8.16",
+		"shallow-equal": "^1.2.1",
+		"uuid": "8.3.1"
+	},
+	"devDependencies": {
+		"@types/chart.js": "^2.9.27",
+		"@types/react": "^16.9.56",
+		"@types/react-bootstrap": "^0.32.24",
+		"@types/react-date-range": "^1.0.0",
+		"@types/uuid": "8.3.0",
+		"typescript": "^4.0.5"
+	}
+}

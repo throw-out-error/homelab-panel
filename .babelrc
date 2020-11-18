@@ -1,0 +1,4 @@
+{
+	"presets": [["@babel/typescript", { "isTsx": true }]],
+	"plugins": ["@babel/proposal-optional-chaining"]
+}

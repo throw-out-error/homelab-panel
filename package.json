@@ -2,14 +2,34 @@
 	"name": "@flowtr/homelab-panel",
 	"private": true,
 	"main": "index.js",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"author": "Theo Paris <theoparisdesigns@gmail.com>",
 	"license": "MIT",
 	"scripts": {
+		"lint": "ultra -r lint",
 		"build": "ultra -r build",
+		"prepublishOnly": "pnpm run lint && pnpm run build",
+		"typegen": "typegen swagger-spec.json > packages/common/src/typings/openapi.d.ts",
 		"link": "ultra -r --filter '*cli' pnpm link"
 	},
 	"devDependencies": {
-		"ultra-runner": "^3.5.0"
+		"@babel/cli": "^7.12.1",
+		"@babel/core": "^7.12.3",
+		"@babel/plugin-proposal-optional-chaining": "^7.12.1",
+		"@babel/plugin-transform-runtime": "^7.12.1",
+		"@babel/plugin-transform-typescript": "^7.12.1",
+		"@babel/preset-typescript": "^7.12.1",
+		"@parcel/config-default": "nightly",
+		"@parcel/transformer-babel": "nightly",
+		"@parcel/validator-typescript": "nightly",
+		"parcel": "nightly",
+		"eslint": "7.13.0",
+		"eslint-config-prettier": "6.15.0",
+		"eslint-plugin-prettier": "3.1.4",
+		"@typescript-eslint/eslint-plugin": "4.6.1",
+		"@typescript-eslint/parser": "4.6.1",
+		"prettier": "2.1.2",
+		"ultra-runner": "^3.5.0",
+		"openapi-client-axios-typegen": "1.1.9"
 	}
 }
