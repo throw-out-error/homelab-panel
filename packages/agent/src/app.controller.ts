@@ -1,30 +1,29 @@
-import { ProcessManager } from "@flowtr/pm";
 import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { mediaServer } from "./app.registry";
 import { AppService } from "./app.service";
 import { AuthGuard } from "./auth.guard";
 
 @Controller()
 export class AppController {
-    pm: ProcessManager;
-
-    constructor(private readonly appService: AppService) {
-        this.pm = new ProcessManager(`${process.cwd()}/pm`);
-    }
+    constructor(private readonly appService: AppService) {}
 
     @Post("app/start")
-    async start() {
-        return (await mediaServer(this.pm, { ADMIN_PASS: "1234" })).app;
+    async start(
+        @Query() type: string,
+        @Query() app: string,
+        @Query() domain?: string,
+        @Body() env?: Record<string, string>
+    ) {
+        return this.appService.startApp(type, app, env ?? {}, domain);
     }
 
     @Get("app/stop")
     async stop(@Query() app: string) {
-        return this.pm.stop(app);
+        return this.appService.stop(app);
     }
 
     @Get("app/list")
     async listApps() {
-        return this.pm.list().map(a => a.app);
+        return this.appService.listApps().map(a => a.app);
     }
 
     @Post("auth")

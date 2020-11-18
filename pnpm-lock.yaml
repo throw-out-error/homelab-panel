@@ -40,6 +40,7 @@ importers:
       ultra-runner: ^3.5.0
   packages/agent:
     dependencies:
+      '@ffdc/nestjs-proxy': 0.4.0
       '@flowtr/homelab-common': 'link:../common'
       '@flowtr/pm': 'link:../pm'
       '@nestjs/common': 7.5.3_0c773f197e7bb0df0bedc332ad8bc35d
@@ -76,6 +77,7 @@ importers:
       tsconfig-paths: 3.9.0
       typescript: 3.9.7
     specifiers:
+      '@ffdc/nestjs-proxy': 0.4.0
       '@flowtr/homelab-common': 'workspace:*'
       '@flowtr/pm': 'workspace:*'
       '@nestjs/cli': ^7.0.0
@@ -1809,6 +1811,12 @@ packages:
       node: ^10.12.0 || >=12.0.0
     resolution:
       integrity: sha512-XRUeBZ5zBWLYgSANMpThFddrZZkEbGHgUdt5UJjZfnlN9BGCiUBrf+nvbRupSjMvqzwnQN0qwCmOxITt1cfywA==
+  /@ffdc/nestjs-proxy/0.4.0:
+    dependencies:
+      http-proxy: 1.18.1
+    dev: false
+    resolution:
+      integrity: sha512-tSDCgepeFKauqmS+X/FtOqA4ebqPN2e42iAS1NolFf4Wmdc7bHjipPga3GO7BVRBGX6hxorRmK+QT3FMWA3BMg==
   /@fortawesome/fontawesome-free/5.15.1:
     dev: false
     engines:
@@ -8297,7 +8305,6 @@ packages:
     resolution:
       integrity: sha1-j2G3XN4BKy6esoTUVFWDtWQ7Yas=
   /eventemitter3/4.0.7:
-    dev: true
     resolution:
       integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
   /events/3.2.0:
@@ -9574,7 +9581,6 @@ packages:
       eventemitter3: 4.0.7
       follow-redirects: 1.13.0
       requires-port: 1.0.0
-    dev: true
     engines:
       node: '>=8.0.0'
     resolution:
@@ -15045,7 +15051,6 @@ packages:
     resolution:
       integrity: sha512-qhM/y57enGWHAe3v/NcwML6a3/vfESLe/sGM2dII+gEO0BpKRUkWZow/tyloNqJyN6kXSl3RyyM8Ll5D/sJP8g==
   /requires-port/1.0.0:
-    dev: true
     resolution:
       integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
   /resolve-cwd/2.0.0:

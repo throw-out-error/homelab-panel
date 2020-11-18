@@ -9,7 +9,7 @@ target
 config/
 /swagger-spec.json
 *.htpasswd
-pm/
+/pm/
 
 # Misc
 *.log*

@@ -20,6 +20,7 @@
     "dependencies": {
         "@flowtr/homelab-common": "workspace:*",
         "@flowtr/pm": "workspace:*",
+        "@ffdc/nestjs-proxy": "0.4.0",
         "@nestjs/common": "^7.5.3",
         "@nestjs/config": "^0.6.0",
         "@nestjs/core": "^7.5.3",

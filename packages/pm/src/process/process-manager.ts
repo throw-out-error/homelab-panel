@@ -1,9 +1,10 @@
 import * as rfs from "rotating-file-stream";
 import NodeGit from "nodegit";
 import * as fs from "fs";
-import { spawn, ChildProcess } from "child_process";
+import shell from "shelljs";
 import { RotatingFileStream } from "rotating-file-stream";
 import { App } from "./app";
+import { spawn, ChildProcess } from "child_process";
 import { promisifyProcess } from "./promisify";
 
 export interface ProcessResult {
@@ -12,8 +13,9 @@ export interface ProcessResult {
 }
 
 export interface AppWrapper {
-    monitor?: ChildProcess;
     app: App;
+    path: string;
+    monitor?: ChildProcess;
     logStream?: RotatingFileStream;
     errStream?: RotatingFileStream;
 }
@@ -22,7 +24,22 @@ export interface IProcessManager {
     stop(app?: string): void;
     deploy(app: App): Promise<ProcessResult>;
     get(app: string): AppWrapper;
+    list(): AppWrapper[];
 }
+
+const stop = (app: AppWrapper) => {
+    if (app)
+        shell.exec("docker-compose stop && docker-compose down", {
+            cwd: app.path,
+        });
+};
+
+const start = (app: AppWrapper) => {
+    if (app)
+        shell.exec("docker-compose up -d && docker-compose restart", {
+            cwd: app.path,
+        });
+};
 
 export class ProcessManager implements IProcessManager {
     protected pm: Map<string, AppWrapper> = new Map();
@@ -31,9 +48,7 @@ export class ProcessManager implements IProcessManager {
     constructor(baseDir: string) {
         this.baseDir = baseDir;
         process.on("beforeExit", () => {
-            this.pm.forEach((value) => {
-                value.monitor.kill();
-            });
+            this.stop();
         });
     }
 
@@ -42,11 +57,10 @@ export class ProcessManager implements IProcessManager {
     }
 
     async stop(app?: string) {
-        if (app) this.pm.get(app).monitor?.kill();
-        else
-            this.pm.forEach((value) => {
-                value.monitor.kill();
-            });
+        if (app) stop(this.pm.get(app));
+        this.pm.forEach((value) => {
+            stop(value);
+        });
     }
 
     get(app: string) {
@@ -57,48 +71,7 @@ export class ProcessManager implements IProcessManager {
         const appPath = `${this.baseDir}/apps/${app.name}`;
         const logPath = `${this.baseDir}/logs/${app.name}`;
 
-        try {
-            if (!fs.existsSync(appPath)) {
-                await NodeGit.Clone.clone(app.repo.url, appPath, {
-                    checkoutBranch: app.repo.branch ?? "master",
-                });
-            }
-
-            if (!fs.existsSync(logPath))
-                fs.mkdirSync(logPath, { recursive: true });
-
-            this.pm.get(app.name)?.monitor?.kill();
-
-            if (!this.pm.has(app.name)) this.pm.set(app.name, { app });
-
-            const repo = await NodeGit.Repository.open(appPath);
-            await repo.fetchAll({});
-            await repo.mergeBranches(
-                app.repo.branch ?? "master",
-                `origin/${app.repo.branch ?? "master"}`
-            );
-            await promisifyProcess(
-                spawn("npm install", {
-                    cwd: appPath,
-                    shell: true,
-                    windowsHide: true,
-                })
-            );
-        } catch (error) {
-            console.error(error);
-            return { status: false, error };
-        }
-        try {
-            await promisifyProcess(
-                spawn("npm run build", {
-                    cwd: appPath,
-                    shell: true,
-                    windowsHide: true,
-                })
-            );
-        } catch (err) {
-            console.log(`Unable to build app ${app.name}: ${err.message}`);
-        }
+        if (!fs.existsSync(logPath)) fs.mkdirSync(logPath, { recursive: true });
 
         // Access log
         this.pm.get(app.name).logStream = rfs.createStream(
@@ -120,13 +93,46 @@ export class ProcessManager implements IProcessManager {
             }
         );
 
+        try {
+            if (!fs.existsSync(appPath)) {
+                await NodeGit.Clone.clone(app.repo.url, appPath, {
+                    checkoutBranch: app.repo.branch ?? "master",
+                });
+            }
+
+            this.stop(app.name);
+
+            if (!this.pm.has(app.name))
+                this.pm.set(app.name, { app, path: appPath });
+
+            const repo = await NodeGit.Repository.open(appPath);
+            await repo.fetchAll({});
+            await repo.mergeBranches(
+                app.repo.branch ?? "master",
+                `origin/${app.repo.branch ?? "master"}`
+            );
+        } catch (error) {
+            this.pm.get(app.name).errStream.write(error);
+            return { status: false, error };
+        }
+        try {
+            shell.exec("docker-compose build", {
+                cwd: appPath,
+            });
+        } catch (err) {
+            this.pm
+                .get(app.name)
+                .errStream.write(
+                    `Unable to build app ${app.name}: ${err.message}`
+                );
+        }
+
         // Start the app
         try {
-            this.pm.get(app.name).monitor = spawn("npm run start", {
+            this.pm.get(app.name).monitor = spawn("docker-compose up", {
                 env: {
                     ...process.env,
                     ...app.env,
-                    PORT: (app.ports[0] ?? 3005).toString(),
                 },
                 cwd: appPath,
                 shell: true,
