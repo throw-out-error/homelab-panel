@@ -9,12 +9,14 @@ target
 config/
 /swagger-spec.json
 *.htpasswd
+pm/
 
 # Misc
 *.log*
 .cache
 .ultra.cache.json
 .parcel-cache
+
 
 # We are using pnpm
 package-lock.json
