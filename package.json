@@ -9,6 +9,6 @@
         "start:all": "pnpm run build:all && ultra -r start"
     },
     "devDependencies": {
-        "ultra-runner": "^3.5.0"
+        "ultra-runner": "3.9.0"
     }
 }
